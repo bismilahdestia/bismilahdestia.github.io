@@ -4,17 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pratama & Mitha's Wedding</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0; }
-        .container { padding: 20px; }
-        .header { background-color: #f8f8f8; padding: 20px; }
-        .header h1 { margin: 0; }
-        .countdown { font-size: 24px; margin: 20px 0; }
-        .section { margin: 40px 0; }
-        .section h2 { margin-bottom: 10px; }
-        .gallery img { max-width: 100%; height: auto; display: block; margin: 10px auto; }
-        .footer { background-color: #f8f8f8; padding: 10px; }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -60,24 +50,7 @@
     </div>
 </div>
 
-<script>
-    // JavaScript for countdown timer
-    const countdownElement = document.getElementById('countdown');
-    const weddingDate = new Date('April 18, 2024 16:00:00').getTime();
-    const updateCountdown = setInterval(() => {
-        const now = new Date().getTime();
-        const distance = weddingDate - now;
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        countdownElement.innerHTML = `${days} Days ${hours} Hours ${minutes} Minutes ${seconds} Seconds`;
-        if (distance < 0) {
-            clearInterval(updateCountdown);
-            countdownElement.innerHTML = "The wedding has started!";
-        }
-    }, 1000);
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
