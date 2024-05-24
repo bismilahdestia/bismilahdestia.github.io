@@ -1,171 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Auto Like Warpcast</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #status {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-    </style>
-    <script>
-        let intervalId;
-
-        async function autoLike() {
-            const authCode = document.getElementById("authCode").value;
-            const targetUrl = document.getElementById("targetUrl").value;
-            const likeInterval = parseInt(document.getElementById("likeInterval").value);
-
-            if (!authCode || !targetUrl || isNaN(likeInterval) || likeInterval <= 0) {
-                setStatus("Silakan masukkan Authorization Code, Target URL, dan Jeda yang valid!", 'error');
-                return;
-            }
-
-            // Extract the profile ID from the target URL
-            const fid = extractProfileId(targetUrl);
-            if (!fid) {
-                setStatus("URL target tidak valid!", 'error');
-                return;
-            }
-
-            document.querySelector("button").disabled = true;
-
-            try {
-                await doLike(fid, 10, authCode, likeInterval);
-            } catch (error) {
-                setStatus("Terjadi kesalahan: " + error.message, 'error');
-            } finally {
-                document.querySelector("button").disabled = false;
-            }
-        }
-
-        function extractProfileId(url) {
-            const matches = url.match(/warpcast\.com\/profile\/(\w+)/);
-            return matches ? matches[1] : null;
-        }
-
-        async function setupRequest(METHOD, URL, HEADERS, PAYLOAD) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            const response = await fetch(URL, {
-                method: METHOD,
-                headers: HEADERS,
-                body: PAYLOAD
-            });
-            const responseData = await response.json();
-            return responseData;
-        }
-
-        async function doLike(fid, limitCast, authCode, likeInterval) {
-            const urlGetListProfCast = `https://client.warpcast.com/v2/profiles/${fid}/casts?limit=${limitCast}`;
-            const urlLike = "https://client.warpcast.com/v2/cast-likes";
-            const headers = {
-                'accept': '*/*',
-                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-                'authorization': 'Bearer ' + authCode,
-                'content-type': 'application/json; charset=utf-8',
-                'fc-amplitude-device-id': 'RHcQ1GzjH-9qsvlnMlVriG',
-                'fc-amplitude-session-id': '1707233061257',
-                'origin': 'https://warpcast.com',
-                'referer': 'https://warpcast.com/',
-                'sec-ch-ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Windows"',
-                'sec-fetch-dest': 'empty',
-                'sec-fetch-mode': 'cors',
-                'sec-fetch-site': 'same-site',
-                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
-            };
-            const payload = {};
-
-            try {
-                const getListCast = await setupRequest("GET", urlGetListProfCast, headers, null);
-                const casts = getListCast.result.casts;
-                for (let cast of casts) {
-                    const hash = cast.hash;
-                    const isReacted = cast.viewerContext.reacted;
-                    if (!isReacted) {
-                        await new Promise(resolve => setTimeout(resolve, likeInterval * 1000));
-                        const payloadHash = JSON.stringify({ castHash: hash });
-                        const response = await fetch(urlLike, {
-                            method: "PUT",
-                            headers: headers,
-                            body: payloadHash
-                        });
-                        if (response.ok) {
-                            setStatus(`Like berhasil dikirim ke ${hash}`, 'success');
-                        } else {
-                            setStatus(`Gagal mengirim like ke ${hash}. Response: ${response.statusText}`, 'error');
-                        }
-                    }
-                }
-                setStatus("Proses auto-like selesai.", 'success');
-            } catch (error) {
-                setStatus("Terjadi kesalahan: " + error.message, 'error');
-            }
-        }
-
-        function setStatus(message, status) {
-            const statusDiv = document.getElementById("status");
-            statusDiv.innerText = message;
-            statusDiv.className = status;
-        }
-    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WarpCash Like Automation</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Auto Like Warpcast</h1>
-        <label for="authCode">Authorization Code:</label>
-        <input type="text" id="authCode">
-        <label for="targetUrl">Target URL:</label>
-        <input type="text" id="targetUrl">
-        <label for="likeInterval">Jeda per Like (detik):</label>
-        <input type="number" id="likeInterval" value="10">
-        <button onclick="autoLike()">Mulai Auto Like</button>
-        <div id="status"></div>
+        <form action="like.php" method="post">
+            <div class="column">
+                <label for="token">Masukan Token Authorization Warpcash:</label>
+                <input type="text" id="token" name="token" placeholder="Token Authorization" required>
+            </div>
+            <div class="column">
+                <label for="urls">Masukan Target URL Cast yang akan di-like (pisahkan dengan koma):</label>
+                <textarea id="urls" name="urls" placeholder="Target URLs (comma separated)" required></textarea>
+            </div>
+            <div class="column">
+                <label for="interval">Waktu per like (dalam detik):</label>
+                <input type="number" id="interval" name="interval" placeholder="Interval (detik)" required>
+            </div>
+            <button type="submit">Mulai Like</button>
+        </form>
     </div>
 </body>
 </html>
