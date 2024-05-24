@@ -45,6 +45,34 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.rsvp form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rsvp label, .rsvp input, .rsvp select, .rsvp button {
+    margin: 10px 0;
+}
+
+.rsvp input, .rsvp select {
+    padding: 10px;
+    width: 80%;
+    max-width: 400px;
+}
+
+.rsvp button {
+    padding: 10px 20px;
+    background-color: #5bc0de;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.rsvp button:hover {
+    background-color: #31b0d5;
+}
+
 .footer {
     background-color: #e0e0e0;
     padding: 10px;
