@@ -53,54 +53,123 @@
         }
     </style>
     <script>
+        var intervalId;
+
         function autoLike() {
             var authCode = document.getElementById("authCode").value;
             var targetUrl = document.getElementById("targetUrl").value;
             var likeInterval = document.getElementById("likeInterval").value;
 
-            // Memastikan kedua field diisi
-            if (authCode === "" || targetUrl === "") {
-                setStatus("Silakan masukkan Authorization Code dan Target URL!", 'error');
+            // Validate inputs
+            if (authCode === "" || targetUrl === "" || likeInterval === "" || isNaN(likeInterval) || likeInterval <= 0) {
+                setStatus("Silakan masukkan Authorization Code, Target URL, dan Jeda yang valid!", 'error');
                 return;
             }
 
-            // Mulai auto-like
-            var intervalId = setInterval(function() {
-                // Kirim request like ke Warpcast menggunakan fetch
-                fetch("https://client.warpcast.com/v2/cast-likes", {
-                    method: "PUT",
-                    headers: {
-                        "accept": "*/*",
-                        "accept-language": "en-US,en;q=0.9,id-ID;q=0.8,id;q=0.7",
-                        "authorization": "Bearer " + authCode,
-                        "content-type": "application/json; charset=utf-8",
-                        "sec-ch-ua": "\"Not-A.Brand\";v=\"99\", \"Chromium\";v=\"124\"",
-                        "sec-ch-ua-mobile": "?0",
-                        "sec-ch-ua-platform": "\"Linux\"",
-                        "sec-fetch-dest": "empty",
-                        "sec-fetch-mode": "cors",
-                        "sec-fetch-site": "same-site"
-                    },
-                    referrer: "https://warpcast.com/",
-                    referrerPolicy: "strict-origin-when-cross-origin",
-                    body: JSON.stringify({ castHash: targetUrl }),
-                    mode: "cors",
-                    credentials: "include"
-                })
-                .then(response => {
-                    if (response.ok) {
-                        setStatus("Like berhasil dikirim ke " + targetUrl, 'success');
-                    } else {
-                        setStatus("Gagal mengirim like ke " + targetUrl, 'error');
-                    }
-                })
-                .catch(error => {
-                    setStatus("Gagal mengirim like ke " + targetUrl + ": " + error, 'error');
-                });
-
-                // Menghentikan auto-like setelah selesai
+            // Prevent multiple intervals
+            if (intervalId) {
                 clearInterval(intervalId);
-            }, likeInterval * 1000); // Konversi jeda per like ke milidetik
+            }
+
+            // Disable button to prevent multiple clicks
+            document.querySelector("button").disabled = true;
+
+            // Extract the profile ID from the target URL
+            var fid = extractProfileId(targetUrl);
+            if (!fid) {
+                setStatus("URL target tidak valid!", 'error');
+                document.querySelector("button").disabled = false;
+                return;
+            }
+
+            // Start auto-like
+            doLike(fid, 10, authCode, likeInterval);
+        }
+
+        function extractProfileId(url) {
+            var matches = url.match(/warpcast\.com\/profile\/(\w+)/);
+            return matches ? matches[1] : null;
+        }
+
+        function setupRequest(METHOD, URL, HEADERS, PAYLOAD) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    fetch(URL, {
+                        method: METHOD,
+                        headers: HEADERS,
+                        body: PAYLOAD
+                    })
+                    .then(response => resolve(response))
+                    .catch(error => reject(error));
+                }, 1000);
+            });
+        }
+
+        function doLike(fid, limitCast, authCode, likeInterval) {
+            var urlGetListProfCast = `https://client.warpcast.com/v2/profiles/${fid}/casts?limit=${limitCast}`;
+            var urlLike = "https://client.warpcast.com/v2/cast-likes";
+            var headers = {
+                'accept': '*/*',
+                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+                'authorization': 'Bearer ' + authCode,
+                'content-type': 'application/json; charset=utf-8',
+                'fc-amplitude-device-id': 'RHcQ1GzjH-9qsvlnMlVriG',
+                'fc-amplitude-session-id': '1707233061257',
+                'origin': 'https://warpcast.com',
+                'referer': 'https://warpcast.com/',
+                'sec-ch-ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
+                'sec-ch-ua-mobile': '?0',
+                'sec-ch-ua-platform': '"Windows"',
+                'sec-fetch-dest': 'empty',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-site': 'same-site',
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+            };
+            var payload = {};
+
+            setupRequest("GET", urlGetListProfCast, headers, payload)
+            .then(response => response.json())
+            .then(data => {
+                var casts = data.result.casts;
+                var index = 0;
+
+                function sendLike() {
+                    if (index >= casts.length) {
+                        setStatus("Proses auto-like selesai.", 'success');
+                        document.querySelector("button").disabled = false;
+                        return;
+                    }
+
+                    var cast = casts[index];
+                    var hash = cast.hash;
+                    var isReacted = cast.viewerContext.reacted;
+
+                    if (!isReacted) {
+                        var payloadHash = JSON.stringify({ castHash: hash });
+
+                        setupRequest("PUT", urlLike, headers, payloadHash)
+                        .then(response => {
+                            if (response.ok) {
+                                setStatus("Like berhasil dikirim ke " + hash, 'success');
+                            } else {
+                                setStatus("Gagal mengirim like ke " + hash + ". Response: " + response.statusText, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            setStatus("Gagal mengirim like ke " + hash + ". Error: " + error.message, 'error');
+                        });
+                    }
+
+                    index++;
+                    setTimeout(sendLike, likeInterval * 1000);
+                }
+
+                sendLike();
+            })
+            .catch(error => {
+                setStatus("Gagal mendapatkan daftar casts. Error: " + error.message, 'error');
+                document.querySelector("button").disabled = false;
+            });
         }
 
         function setStatus(message, status) {
