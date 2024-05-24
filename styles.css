@@ -56,9 +56,9 @@ label {
 }
 
 input, textarea {
-    padding: 10px;
+    padding: 15px; /* Perbesar kolom input */
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
     width: 100%;
     font-size: 16px;
     transition: border-color 0.3s ease;
@@ -74,21 +74,21 @@ textarea {
 }
 
 button {
-    padding: 10px 20px;
+    padding: 15px 20px; /* Perbesar tombol */
     border: none;
-    background-color: #007BFF;
+    background-color: #4CAF50; /* Warna hijau */
     color: white;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #45a049; /* Warna hijau yang lebih gelap saat hover */
     transform: scale(1.05);
 }
 
 button:active {
-    background-color: #003f7f;
+    background-color: #3e8e41; /* Warna hijau yang lebih gelap saat aktif */
 }
