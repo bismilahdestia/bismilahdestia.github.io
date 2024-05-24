@@ -1,81 +1,62 @@
 body {
-    font-family: 'Arial', sans-serif;
-    text-align: center;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     margin: 0;
-    padding: 0;
     background-color: #f0f0f0;
 }
 
 .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+form {
+    display: flex;
+    gap: 20px;
+}
+
+.column {
+    background-color: #ffffff;
     padding: 20px;
-}
-
-.header {
-    background-color: #e0e0e0;
-    padding: 20px;
-    border-bottom: 2px solid #ccc;
-}
-
-.header h1 {
-    margin: 0;
-    color: #333;
-}
-
-.countdown {
-    font-size: 24px;
-    margin: 20px 0;
-    color: #d9534f;
-}
-
-.section {
-    margin: 40px 0;
-}
-
-.section h2 {
-    margin-bottom: 10px;
-    color: #5bc0de;
-}
-
-.gallery img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 10px auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.rsvp form {
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.rsvp label, .rsvp input, .rsvp select, .rsvp button {
-    margin: 10px 0;
+label {
+    margin-bottom: 10px;
 }
 
-.rsvp input, .rsvp select {
+input, textarea {
     padding: 10px;
-    width: 80%;
-    max-width: 400px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+    margin-bottom: 20px;
 }
 
-.rsvp button {
+textarea {
+    height: 100px;
+    resize: none;
+}
+
+button {
     padding: 10px 20px;
-    background-color: #5bc0de;
-    color: white;
     border: none;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 4px;
     cursor: pointer;
+    font-size: 16px;
 }
 
-.rsvp button:hover {
-    background-color: #31b0d5;
-}
-
-.footer {
-    background-color: #e0e0e0;
-    padding: 10px;
-    border-top: 2px solid #ccc;
-    color: #777;
+button:hover {
+    background-color: #0056b3;
 }
