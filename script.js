@@ -23,3 +23,11 @@ const countdownInterval = setInterval(updateCountdown, 1000);
 
 // Call the function immediately to show the initial countdown
 updateCountdown();
+
+// JavaScript for RSVP form
+const rsvpForm = document.getElementById('rsvp-form');
+
+rsvpForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('RSVP form submitted');
+});
