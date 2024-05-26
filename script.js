@@ -1,33 +1,30 @@
-// JavaScript for countdown timer
-const countdownElement = document.getElementById('countdown');
-const weddingDate = new Date('April 18, 2024 16:00:00').getTime();
+const form = document.getElementById('nameForm');
+const messageDiv = document.getElementById('message');
+const apologyMessage = document.getElementById('apologyMessage');
+const image = document.getElementById('image');
 
-const updateCountdown = () => {
-    const now = new Date().getTime();
-    const distance = weddingDate - now;
-
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-    countdownElement.innerHTML = `${days} Days ${hours} Hours ${minutes} Minutes ${seconds} Seconds`;
-
-    if (distance < 0) {
-        clearInterval(countdownInterval);
-        countdownElement.innerHTML = "The wedding has started!";
-    }
-};
-
-const countdownInterval = setInterval(updateCountdown, 1000);
-
-// Call the function immediately to show the initial countdown
-updateCountdown();
-
-// JavaScript for RSVP form
-const rsvpForm = document.getElementById('rsvp-form');
-
-rsvpForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    alert('RSVP form submitted');
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const name = document.getElementById('name').value;
+    
+    // Generate apology message
+    const apology = generateApology(name);
+    
+    // Display message and image
+    apologyMessage.textContent = apology.text;
+    image.src = apology.image;
+    messageDiv.style.display = 'block';
+    
+    // Clear form
+    form.reset();
 });
+
+function generateApology(name) {
+    const apologies = [
+        { text: `Maaf ya ${name}, chatGPT harus menunda untuk membantu`, image: 'https://via.placeholder.com/150' },
+        { text: `Maaf, ${name}, Saya tidak dapat melakukannya!`, image: 'https://via.placeholder.com/150' },
+        { text: `Maaf, ${name}, Tidak bisa membantu!`, image: 'https://via.placeholder.com/150' }
+    ];
+    
+    return apologies[Math.floor(Math.random() * apologies.length)];
+}
